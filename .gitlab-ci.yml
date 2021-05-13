@@ -35,6 +35,5 @@ pages:
     paths:
     - public
   only:
-(panel-codes-twine-cp36) batman@battop:~/PyCharmProjec
     - master
 
