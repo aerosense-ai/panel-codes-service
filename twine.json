@@ -182,6 +182,11 @@
                     "type": "number"
                 }
             },
+            "cp_min": {
+                "description": "Min Cp values corresponding to the input alpha values",
+                "title": "Min Cp values",
+                "type": "array"
+            },
             "cp": {
                 "description": "Cp values for x and y coordinate of the airfoil",
                 "title": "Cp values",

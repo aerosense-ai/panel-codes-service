@@ -18,6 +18,6 @@ def run(analysis):
     elif analysis.config['analysis_program'] == 'rfoil':
         pass
 
-
+    analysis.finalise(output_dir=os.path.join(REPOSITORY_ROOT, "data", "output"))
 
 

@@ -61,9 +61,15 @@ def call(analysis):
                                analysis.input_values['alpha_range'][1],
                                analysis.input_values['alpha_range'][2])
 
+    # TODO should aoa be duplicated?
+    # analysis.output_values['aoa'] = result[0]
     analysis.output_values['cl'] = result[1]
     analysis.output_values['cd'] = result[2]
     analysis.output_values['cm'] = result[3]
+    analysis.output_values['cp_min'] = result[4]
+    # TODO This saves only the last cp distribution in aseq. [?] Use xf.a with a for loop?
+    analysis.output_values['cp'] = xf.get_cp_distribution()[1]
+    print(analysis.output_values['cp'])
 
 
 def set_input(_in):
