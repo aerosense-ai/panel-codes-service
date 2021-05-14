@@ -44,7 +44,8 @@ def test_deployment():
 
     input_values = {
         "airfoil_name": "naca-0012",
-        "alpha_range": [-10, 10, 5],
+        "alpha_range": [-10, 10, 3],
+        "repanel": False,
         "inflow_speed": 1,
         "kinematic_viscosity": 1e-6,
         "characteristic_length": 1,

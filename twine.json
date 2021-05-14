@@ -65,26 +65,31 @@
                 "title": "Airfoil name",
                 "type": "string"
             },
+            "repanel": {
+                "title": "Repanel Airfoil",
+                "type": "boolean",
+                "default": false
+            },
             "alpha_range": {
                 "description": "The range of alpha values at which the solver will be run.",
                 "type": "array",
-                "title": "Alpha Range [min max step]",
-                "default": [-10, 10, 5],
+                "title": "Alpha Range [min max n-sample-points]",
+                "default": [0, 10, 11],
                 "items": [
                     {
                         "type": "number",
-                        "min": -30,
-                        "max": 30
+                        "minimum": -30,
+                        "maximum": 30
                     },
                     {
                         "type": "number",
-                        "min": -30,
-                        "max": 30
+                        "minimum": -30,
+                        "maximum": 30
                     },
                     {
-                        "type": "number",
-                        "min": 0.1,
-                        "max": 180
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 1000
                     }
                 ],
                 "additionalItems": false

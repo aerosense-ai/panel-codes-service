@@ -1,3 +1,5 @@
+import os.path
+
 import numpy as np
 from xfoil import XFoil
 # from vgfoil import VGFoil
@@ -16,12 +18,15 @@ xf.print = 1  # Suppress terminal output: 0, enable output: 1
 def call(analysis):
     '''Runs analysis using Xfoil'''
     print("Lets run Xfoil!")
-
     # load airfoil shapefiles dataset
     input_dataset = analysis.input_manifest.get_dataset("aerofoil_shape_data")
-    airfoil_file = input_dataset.get_file_by_tag("name:"+analysis.input_values["airfoil_name"])
 
+    #TODO [?] Should airfoil section and repanel settings be in config rather then input?
+    airfoil_file = input_dataset.get_file_by_tag("name:"+analysis.input_values["airfoil_name"])
     xf.airfoil = load_airfoil(airfoil_file)
+    # It is possible to repanel
+    if analysis.input_values['repanel']:
+        xf.repanel(n_nodes=analysis.input_values['repanel_configuration']['nodes'])
 
     # Reynolds number,
     xf.Re = set_input(analysis.input_values)[0]
@@ -55,22 +60,38 @@ def call(analysis):
     xf.max_iter = analysis.configuration_values['max_iterations']
 
     # Feed the AoA range to Xfoil and perfom the analysis
-    # The result contains following vectors AoA, Cl, Cd, Cm, Cp
-    #
-    result = xf.aseq(analysis.input_values['alpha_range'][0],
-                               analysis.input_values['alpha_range'][1],
-                               analysis.input_values['alpha_range'][2])
+    # TODO aseq cannot be used as get_cp_distribution returns only last converged result
+    #  [?] Use xf.a with a for loop?
+    aoa_range=np.linspace(analysis.input_values['alpha_range'][0],
+                          analysis.input_values['alpha_range'][1],
+                          analysis.input_values['alpha_range'][2])
+    cp_dump = []
+    results = []
+
+    for aoa in aoa_range:
+        # The result contains following vectors Cl, Cd, Cm, Cp_min
+        result = xf.a(aoa)
+        # USE forked version of xfoil, so that get_cp_distribution also outputs y-coordinate!
+        cp = np.array([aoa*np.ones(len(xf.get_cp_distribution()[0])),
+                    xf.get_cp_distribution()[0],
+                    xf.get_cp_distribution()[1],
+                    xf.get_cp_distribution()[2]])
+        cp_dump.append(cp.T)
+        results.append(result)
 
     # TODO should aoa be duplicated?
-    # analysis.output_values['aoa'] = result[0]
-    analysis.output_values['cl'] = result[1]
-    analysis.output_values['cd'] = result[2]
-    analysis.output_values['cm'] = result[3]
-    analysis.output_values['cp_min'] = result[4]
-    # TODO This saves only the last cp distribution in aseq. [?] Use xf.a with a for loop?
-    analysis.output_values['cp'] = xf.get_cp_distribution()[1]
-    print(analysis.output_values['cp'])
+    # analysis.output_values['aoa'] =
 
+    # Cast to np array for easier handling
+    results=np.array(results)
+    analysis.output_values['cl'] = results[:, 0]
+    analysis.output_values['cd'] = results[:, 1]
+    analysis.output_values['cm'] = results[:, 2]
+    analysis.output_values['cp_min'] = results[:, 3]
+
+    # TODO hangle this properly. Dumping cp to csv file for now
+    # np.savetxt("cp_dump.csv", np.concatenate(cp_dump), delimiter=",")
+    # analysis.output_values['cp'] or should we make a manifested file?
 
 def set_input(_in):
     # Calculate Reynolds from input values
