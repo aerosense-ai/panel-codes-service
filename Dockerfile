@@ -10,7 +10,7 @@ WORKDIR $PROJECT_ROOT
 RUN apt-get update -y && apt-get install -y --fix-missing build-essential gfortran git && rm -rf /var/lib/apt/lists/*
 
 # xfoil-python has to be installed locally from a clone (and only seems to work on python 3.6).
-RUN git clone https://github.com/daniel-de-vries/xfoil-python.git && pip install ./xfoil-python
+RUN git clone https://github.com/GDuthe/xfoil-python.git && pip install ./xfoil-python
 
 COPY requirements-dev.txt .
 COPY setup.py .
