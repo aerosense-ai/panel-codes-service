@@ -11,6 +11,6 @@ setup(
     ''',
     install_requires=[
         "numpy",
-        "octue>=0.1.16",
+        "octue @ https://github.com/octue/octue-sdk-python/archive/feature/tag-templates.zip",
     ]
 )
