@@ -50,13 +50,15 @@
             }
         }
     },
-    "input_manifest": [
-        {
-            "key": "aerofoil_shape_data",
-            "purpose": "A dataset containing shape files in .dat or tab delimited open form, describing the aerofoil shape.",
-            "filters": "tags:(series:naca)"
-        }
-    ],
+    "input_manifest": {
+        "datasets": [
+            {
+                "key": "aerofoil_shape_data",
+                "purpose": "A dataset containing shape files in .dat or tab delimited open form, describing the aerofoil shape.",
+                "filters": "tags:(series:naca)"
+            }
+        ]
+    },
     "input_values_schema": {
         "title": "Input values schema",
         "type": "object",

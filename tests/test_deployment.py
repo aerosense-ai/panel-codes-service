@@ -23,7 +23,7 @@ def test_deployment():
                 cluster=0,
                 sequence=0,
                 timestamp=0,
-                tags=["name:naca-2412"],
+                tags={"name": "naca-2412"},
                 allow_overwrite=True
             ),
             Datafile.from_cloud(
@@ -34,7 +34,7 @@ def test_deployment():
                 cluster=0,
                 sequence=1,
                 timestamp=0,
-                tags=["name:naca-0012"],
+                tags={"name": "naca-0012"},
                 allow_overwrite=True
             )
         ]

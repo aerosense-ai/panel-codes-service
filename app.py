@@ -17,7 +17,3 @@ def run(analysis):
         pass
     elif analysis.config['analysis_program'] == 'rfoil':
         pass
-
-
-
-
