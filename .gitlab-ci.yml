@@ -14,7 +14,7 @@ build_and_test:
     - apt-get update -y && apt-get install -y --fix-missing build-essential gfortran
     - python3 -m venv test-venv
     - bash test-venv/bin/activate
-    - git clone https://github.com/daniel-de-vries/xfoil-python.git && pip install ./xfoil-python
+    - git clone https://github.com/GDuthe/xfoil-python.git && pip install ./xfoil-python
     - pip install -r requirements-dev.txt
     - coverage run -m unittest
     - coverage report
