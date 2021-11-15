@@ -22,7 +22,7 @@ def call(analysis):
     input_dataset = analysis.input_manifest.get_dataset("aerofoil_shape_data")
 
     #TODO [?] Should airfoil section and repanel settings be in config rather then input?
-    airfoil_file = input_dataset.get_file_by_tag("name:"+analysis.input_values["airfoil_name"])
+    airfoil_file = input_dataset.get_file_by_label(analysis.input_values["airfoil_name"])
     xf.airfoil = load_airfoil(airfoil_file)
     # It is possible to repanel
     if analysis.input_values['repanel']:
@@ -30,6 +30,9 @@ def call(analysis):
 
     # Reynolds number,
     xf.Re = set_input(analysis.input_values)[0]
+
+    # Setting Mach number before assigning airfoil throws in the error.
+    xf.M = analysis.input_values['mach_number']
 
     # TODO Research for Critical Reynolds Number dependency from leading edge erosion, and force xtr or modify Ncrit.
     #      Default xtr is (1,1), Default n_ctit is 9.
@@ -50,54 +53,51 @@ def call(analysis):
     # N_2 = 5    - 6.18 log10(TI)
     xf.n_crit = analysis.input_values['n_critical']
 
-    # Setting Mach number before assigning airfoil throws in the error.
-    # BUG in xfoil-python 1.1.1 !! Changing Mach number has no effect on results!
-    # There seems to be confusion between MINf and MINf1, adding a line MINf1 = M
-    # after line 204 of the api.f90, seems to solve the issue.
-    xf.M = analysis.input_values['mach_number']
-
     # Set the max number of iterations
     xf.max_iter = analysis.configuration_values['max_iterations']
 
     # Feed the AoA range to Xfoil and perfom the analysis
-    # TODO aseq cannot be used as get_cp_distribution returns only last converged result
-    #  [?] Use xf.a with a for loop?
+    # TODO
+    #  [?] Use "xf.a" with a for loop OR we should care only about the last result in seq???
+    #  Note: IF "xf.aseq" is used get_cp_distribution returns only last converged result
     aoa_range=np.linspace(analysis.input_values['alpha_range'][0],
                           analysis.input_values['alpha_range'][1],
                           analysis.input_values['alpha_range'][2])
-    cp_dump = []
+
     results = []
+    cp_results = []
+
 
     for aoa in aoa_range:
-        # The result contains following vectors Cl, Cd, Cm, Cp_min
-        result = xf.a(aoa)
+        # The result contains following tuples (Cl, Cd, Cm, Cp_min)
         # USE forked version of xfoil, so that get_cp_distribution also outputs y-coordinate!
-        cp = np.array([aoa*np.ones(len(xf.get_cp_distribution()[0])),
-                    xf.get_cp_distribution()[0],
-                    xf.get_cp_distribution()[1],
-                    xf.get_cp_distribution()[2]])
-        cp_dump.append(cp.T)
-        results.append(result)
+        results.append(xf.a(aoa))
+        # TODO x-coord and y-coord remain same between iterations... But I guess we can duplicate them for now
+        cp_results.append({
+            'x-coord': xf.get_cp_distribution()[0],
+            'y-coord': xf.get_cp_distribution()[1],
+            'cp': xf.get_cp_distribution()[2],
+        })
+
 
     # TODO should aoa be duplicated?
-    # analysis.output_values['aoa'] =
-
+    analysis.output_values['aoa'] = aoa_range
     # Cast to np array for easier handling
     results=np.array(results)
     analysis.output_values['cl'] = results[:, 0]
     analysis.output_values['cd'] = results[:, 1]
     analysis.output_values['cm'] = results[:, 2]
     analysis.output_values['cp_min'] = results[:, 3]
-
-    # TODO hangle this properly. Dumping cp to csv file for now
+    # TODO should we make a manifested file?
     # np.savetxt("cp_dump.csv", np.concatenate(cp_dump), delimiter=",")
-    # analysis.output_values['cp'] or should we make a manifested file?
+    analysis.output_values['cp'] = cp_results
 
 def set_input(_in):
     # Calculate Reynolds from input values
     reynolds = _in['inflow_speed'] * _in['characteristic_length'] / _in['kinematic_viscosity']
     # Calculate x-transition from Critical Reynolds
-    x_transition = tuple(_xtr / reynolds for _xtr in _in['re_xtr'])
+    # x_transition = tuple(_xtr / reynolds for _xtr in _in['re_xtr'])
+    x_transition = _in['characteristic_length']
     return reynolds, x_transition
 
 
@@ -105,8 +105,8 @@ def load_airfoil(airfoil_file):
     """
     Loads airfoil geometry data from .dat file
     """
-    print(airfoil_file.get_local_path())
-    with open(airfoil_file.get_local_path()) as f:
+    print(airfoil_file.local_path)
+    with open(airfoil_file.local_path) as f:
         content = f.readlines()
 
     x_coord = []
