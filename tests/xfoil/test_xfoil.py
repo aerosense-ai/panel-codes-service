@@ -29,4 +29,4 @@ class TestXFoil(TestCase):
             input_manifest=os.path.join(case_path, "data", "input", "manifest.json")
         )
 
-        analysis.finalise(output_dir=os.path.join(case_path, "data", "output"))
+        analysis.finalise()

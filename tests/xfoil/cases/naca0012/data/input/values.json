@@ -1,5 +1,5 @@
 {
-  "airfoil_name": "naca-0012",
+  "airfoil_label": "naca-0012",
   "repanel": false,
   "alpha_range": [0, 6, 3],
   "inflow_speed": 1,

@@ -54,8 +54,8 @@
         "title": "Input values schema",
         "type": "object",
         "properties": {
-            "airfoil_name": {
-                "title": "Airfoil name",
+            "airfoil_label": {
+                "title": "Airfoil label",
                 "type": "string"
             },
             "repanel": {
@@ -68,7 +68,7 @@
                 "type": "array",
                 "title": "Alpha Range [min max n-sample-points]",
                 "default": [0, 10, 11],
-                "items": [
+                "prefixItems": [
                     {
                         "type": "number",
                         "minimum": -30,
@@ -129,7 +129,7 @@
                 "title": "Critical Reynolds number for top and bottom of the airfoil",
                 "description": "Reynolds number at which the transition from laminar to turbulent flow occurs  [Top, Bottom]",
                 "type": "array",
-                "items": [
+                "prefixItems": [
                     {
                         "type": "number",
                         "default": 5e5,
@@ -148,12 +148,11 @@
         }
     },
     "input_manifest":{
-		"datasets":[
-			{
-				"key": "aerofoil_shape_data",
-				"purpose": "A dataset containing shape files in .dat or tab delimited open form, describing the aerofoil shape."
-			}
-		]
+		"datasets": {
+            "aerofoil_shape_data":{
+                "purpose": "A dataset containing shape files in .dat or tab delimited open form, describing the aerofoil shape."
+            }
+        }
     },
     "output_values_schema": {
         "type": "object",
