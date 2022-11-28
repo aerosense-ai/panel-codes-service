@@ -1,10 +1,11 @@
 import os.path
-
+import logging
 import numpy as np
 from xfoil import XFoil
 # from vgfoil import VGFoil
 
 
+logger = logging.getLogger(__name__)
 
 # TODO properly code initialization of VGFoil or XFoil instance and property setters
 xf = XFoil()  # create xfoil object
@@ -17,12 +18,12 @@ xf.print = 1  # Suppress terminal output: 0, enable output: 1
 
 def call(analysis):
     '''Runs analysis using Xfoil'''
-    print("Lets run Xfoil!")
+    logger.info("Xfoil solver started.")
     # load airfoil shapefiles dataset
     input_dataset = analysis.input_manifest.get_dataset("aerofoil_shape_data")
 
     #TODO [?] Should airfoil section and repanel settings be in config rather then input?
-    airfoil_file = input_dataset.get_file_by_label(analysis.input_values["airfoil_name"])
+    airfoil_file = input_dataset.get_file_by_label(analysis.input_values["airfoil_label"])
     xf.airfoil = load_airfoil(airfoil_file)
     # It is possible to repanel
     if analysis.input_values['repanel']:
@@ -105,7 +106,7 @@ def load_airfoil(airfoil_file):
     """
     Loads airfoil geometry data from .dat file
     """
-    print(airfoil_file.local_path)
+    logger.info(airfoil_file.local_path)
     with open(airfoil_file.local_path) as f:
         content = f.readlines()
 
