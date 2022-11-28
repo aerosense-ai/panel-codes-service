@@ -1,0 +1,10 @@
+{
+  "configuration_values": {
+    "analysis_program": "xfoil",
+    "max_iterations":1000,
+    "backend": {
+        "name": "GCPPubSubBackend",
+        "project_name": "aerosense-twined"
+    }
+  }
+}
