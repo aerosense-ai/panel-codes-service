@@ -1,3 +1,4 @@
 services:
-  - name: aerosense/panel-codes
+  - name: panel-codes
+    namespace: aerosense
     app_configuration_path: app_configuration.json
