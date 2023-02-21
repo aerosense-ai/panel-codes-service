@@ -118,7 +118,7 @@ jobs:
           image: ${{ needs.info.outputs.image_version_artefact }}
           region: ${{ needs.info.outputs.gcp_region }}
           tag: v${{ needs.info.outputs.version_slug }}
-          flags: --allow-unauthenticated
+          flags: '--allow-unauthenticated'
 
       - name: Show deployed service URL
         run: |

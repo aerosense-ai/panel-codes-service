@@ -1,6 +1,10 @@
 from unittest import TestCase
 
 from octue.resources import Manifest, Child
+from octue.log_handlers import apply_log_handler
+
+
+apply_log_handler()
 
 
 class TestDeployment(TestCase):
@@ -25,7 +29,7 @@ class TestDeployment(TestCase):
         }
 
         child = Child(
-            id="aerosense/panel-codes-service:main-0.0.0",
+            id="aerosense/panel-codes:0.0.1",
             backend={"name": "GCPPubSubBackend", "project_name": "aerosense-twined"},
         )
 
