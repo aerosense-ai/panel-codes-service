@@ -90,7 +90,7 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled == 'true'}}
         uses: mxschmitt/action-tmate@v3
 
-      - name: Push container with latest and version tags
+      - name: Build and push container with latest and version tags
         # Note: We don't push containers with shas because we'd end up with terabytes in storage (an image for every commit)
         uses: docker/build-push-action@v2
         with:
@@ -107,7 +107,7 @@ jobs:
       - name: Get service name
         id: service_name
         run: |
-          echo "service_name=${{ needs.info.outputs.gcp_resource_affix }}-${{ needs.info.outputs.gcp_service }}" >> $GITHUB_OUTPUT
+          echo "service_name=${{ needs.info.outputs.gcp_resource_affix }}-${{ needs.info.outputs.gcp_service_name }}" >> $GITHUB_OUTPUT
 
       - name: Deploy to Cloud Run service
         id: deploy_service
@@ -115,12 +115,12 @@ jobs:
         with:
           env_vars: |
             OCTUE_SERVICE_NAME=${{ steps.service_name.outputs.service_name }}
-            OCTUE_SERVICE_REVISION_TAG=${{ needs.info.outputs.version_slug }}
+            OCTUE_SERVICE_REVISION_TAG=${{ needs.info.outputs.image_version_tag }}
             COMPUTE_PROVIDER=GOOGLE_CLOUD_RUN
           service: ${{ steps.service_name.outputs.service_name }}
           image: ${{ needs.info.outputs.image_version_artefact }}
           region: ${{ needs.info.outputs.gcp_region }}
-          tag: v${{ needs.info.outputs.version_slug }}
+          tag: v${{ needs.info.outputs.image_version_tag }}
 
       - name: Show deployed service URL
         run: |
@@ -132,5 +132,5 @@ jobs:
           project_name: ${{ needs.info.outputs.gcp_project_name }}
           service_namespace: aerosense
           service_name: ${{ steps.service_name.outputs.service_name }}
-          revision_tag: ${{ needs.info.outputs.version_slug }}
+          revision_tag: ${{ needs.info.outputs.image_version_tag }}
           push_endpoint: ${{ steps.deploy_service.outputs.url }}
