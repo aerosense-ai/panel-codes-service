@@ -98,6 +98,8 @@ jobs:
           platforms: linux/amd64
           file: ./Dockerfile
           push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           tags: |
             ${{ needs.info.outputs.image_version_artefact}}
             ${{ needs.info.outputs.image_latest_artefact}}
