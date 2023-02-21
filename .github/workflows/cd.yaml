@@ -121,6 +121,7 @@ jobs:
           image: ${{ needs.info.outputs.image_version_artefact }}
           region: ${{ needs.info.outputs.gcp_region }}
           tag: sha${{ needs.info.outputs.short_sha }}
+          flags: --allow-unauthenticated
 
       - name: Show deployed service URL
         run: |
