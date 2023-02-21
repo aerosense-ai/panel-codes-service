@@ -11,13 +11,11 @@ def call(analysis):
     # TODO properly code initialization of XFoil Class instance and property setters
     xf = XFoil()  # create xfoil object
     xf.print = int(not analysis.configuration_values["silent_mode"])  # Suppress terminal output: 0, enable output: 1
-    # load airfoil shapefiles dataset
-    input_dataset = analysis.input_manifest.get_dataset("aerofoil_shape_data")
 
-    #TODO [?] Should airfoil section and repanel settings be in config rather then input?
-    airfoil_file = input_dataset.get_file_by_label(analysis.input_values["airfoil_label"])
-    xf.airfoil = load_airfoil(xf, airfoil_file)
-    # It is possible to repanel
+    # TODO [?] Should airfoil section and repanel settings be in config rather then input?
+    airfoil_file_path = analysis.input_values["airfoil_geometry_file"]
+    xf.airfoil = load_airfoil(xf, airfoil_file_path)
+    # It is possible to re-panel
     if analysis.input_values['repanel']:
         xf.repanel(n_nodes=analysis.input_values['repanel_configuration']['nodes'])
 
@@ -49,7 +47,7 @@ def call(analysis):
     # Set the max number of iterations
     xf.max_iter = analysis.configuration_values['max_iterations']
 
-    # Feed the AoA range to Xfoil and perfom the analysis
+    # Feed the AoA range to Xfoil and perform the analysis
     # TODO
     #  [?] Use "xf.a" with a for loop OR we should care only about the last result in seq???
     #  Note: IF "xf.aseq" is used get_cp_distribution returns only last converged result
@@ -61,10 +59,8 @@ def call(analysis):
     results = []
     cp_results = []
 
-
     for aoa in aoa_range:
         # The result contains following tuples (Cl, Cd, Cm, Cp_min)
-        # USE forked version of xfoil, so that get_cp_distribution also outputs y-coordinate!
         results.append(xf.a(aoa))
         # TODO x-coord and y-coord remain same between iterations... But I guess we can duplicate them for now
         cp_results.append({
@@ -73,11 +69,10 @@ def call(analysis):
             'cp': xf.get_cp_distribution()[2],
         })
 
-
     # TODO should aoa be duplicated?
     analysis.output_values['aoa'] = aoa_range
     # Cast to np array for easier handling
-    results=np.array(results)
+    results = np.array(results)
     analysis.output_values['cl'] = results[:, 0]
     analysis.output_values['cd'] = results[:, 1]
     analysis.output_values['cm'] = results[:, 2]
@@ -85,6 +80,7 @@ def call(analysis):
     # TODO should we make a manifested file?
     # np.savetxt("cp_dump.csv", np.concatenate(cp_dump), delimiter=",")
     analysis.output_values['cp'] = cp_results
+
 
 def set_input(_in):
     # Calculate Reynolds from input values
@@ -95,12 +91,12 @@ def set_input(_in):
     return reynolds, x_transition
 
 
-def load_airfoil(xf, airfoil_file):
+def load_airfoil(xf, airfoil_file_path):
     """
     Loads airfoil geometry data from .dat file
     """
-    logger.info(airfoil_file.local_path)
-    with open(airfoil_file.local_path) as f:
+    logger.info("Loaded airfoil geometry.")
+    with open(airfoil_file_path) as f:
         content = f.readlines()
 
     x_coord = []

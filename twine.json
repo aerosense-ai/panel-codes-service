@@ -40,6 +40,11 @@
                     }
                 ]
             },
+            "silent_mode": {
+                "description": "Supress panel solver terminal output stream",
+                "type": "boolean",
+                "default": true
+            },
             "max_iterations":{
                 "description": "Maximum number of iterations",
                 "type": "integer",
@@ -54,8 +59,8 @@
         "title": "Input values schema",
         "type": "object",
         "properties": {
-            "airfoil_label": {
-                "title": "Airfoil label",
+            "airfoil_geometry_file": {
+                "title": "A path to the Airfoil .dat file",
                 "type": "string"
             },
             "repanel": {
@@ -144,13 +149,6 @@
                     }
                 ],
                 "additionalItems": false
-            }
-        }
-    },
-    "input_manifest":{
-		"datasets": {
-            "aerofoil_shape_data":{
-                "purpose": "A dataset containing shape files in .dat or tab delimited open form, describing the aerofoil shape."
             }
         }
     },

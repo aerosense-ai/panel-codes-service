@@ -1,3 +1,4 @@
+import json
 import os
 from unittest import TestCase
 
@@ -21,12 +22,14 @@ class TestXFoil(TestCase):
         runner = Runner(
             app_src=REPOSITORY_ROOT,
             twine=os.path.join(REPOSITORY_ROOT, "twine.json"),
-            configuration_values=os.path.join(case_path, "data", "configuration", "values.json")
+            configuration_values=os.path.join(case_path, "configuration_values.json")
         )
 
+        with open(os.path.join(case_path, "input_values.json"), "r") as values_file:
+            input_values=json.load(values_file)
+        input_values["airfoil_geometry_file"] = os.path.join(case_path, "naca_0012.dat")
         analysis = runner.run(
-            input_values=os.path.join(case_path, "data", "input", "values.json"),
-            input_manifest=os.path.join(case_path, "data", "input", "manifest.json")
+            input_values=input_values
         )
 
         analysis.finalise()
