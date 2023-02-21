@@ -50,41 +50,39 @@
             }
         }
     },
-    "input_manifest": [
-        {
-            "key": "aerofoil_shape_data",
-            "purpose": "A dataset containing shape files in .dat or tab delimited open form, describing the aerofoil shape.",
-            "filters": "tags:(series:naca)"
-        }
-    ],
     "input_values_schema": {
         "title": "Input values schema",
         "type": "object",
         "properties": {
-            "airfoil_name": {
-                "title": "Airfoil name",
+            "airfoil_label": {
+                "title": "Airfoil label",
                 "type": "string"
+            },
+            "repanel": {
+                "title": "Repanel Airfoil",
+                "type": "boolean",
+                "default": false
             },
             "alpha_range": {
                 "description": "The range of alpha values at which the solver will be run.",
                 "type": "array",
-                "title": "Alpha Range [min max step]",
-                "default": [-10, 10, 5],
-                "items": [
+                "title": "Alpha Range [min max n-sample-points]",
+                "default": [0, 10, 11],
+                "prefixItems": [
                     {
                         "type": "number",
-                        "min": -30,
-                        "max": 30
+                        "minimum": -30,
+                        "maximum": 30
                     },
                     {
                         "type": "number",
-                        "min": -30,
-                        "max": 30
+                        "minimum": -30,
+                        "maximum": 30
                     },
                     {
-                        "type": "number",
-                        "min": 0.1,
-                        "max": 180
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 1000
                     }
                 ],
                 "additionalItems": false
@@ -131,7 +129,7 @@
                 "title": "Critical Reynolds number for top and bottom of the airfoil",
                 "description": "Reynolds number at which the transition from laminar to turbulent flow occurs  [Top, Bottom]",
                 "type": "array",
-                "items": [
+                "prefixItems": [
                     {
                         "type": "number",
                         "default": 5e5,
@@ -146,6 +144,13 @@
                     }
                 ],
                 "additionalItems": false
+            }
+        }
+    },
+    "input_manifest":{
+		"datasets": {
+            "aerofoil_shape_data":{
+                "purpose": "A dataset containing shape files in .dat or tab delimited open form, describing the aerofoil shape."
             }
         }
     },
@@ -181,6 +186,11 @@
                 "items": {
                     "type": "number"
                 }
+            },
+            "cp_min": {
+                "description": "Min Cp values corresponding to the input alpha values",
+                "title": "Min Cp values",
+                "type": "array"
             },
             "cp": {
                 "description": "Cp values for x and y coordinate of the airfoil",

@@ -1,8 +1,0 @@
-{
-    "app_dir": ".",
-    "twine": "twine.json",
-    "configuration_values": {
-        "analysis_program": "xfoil",
-        "max_iterations": 20
-    }
-}

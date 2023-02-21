@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "panel-codes-service"
+version = "0.0.0"
+description = ""
+authors = ["time-trader"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "xfoil_module"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+octue = "^0.43.3"
+numpy = "^1.24.2"
+xfoil = {git = "https://github.com/DARcorporation/xfoil-python.git"}
+
+
+[tool.poetry.group.dev.dependencies]
+coverage = "^7.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
