@@ -14,11 +14,11 @@ def run(analysis):
     if analysis.configuration_values['analysis_program'] == 'xfoil':
         xfoil_module.call(analysis)  # Pass the parsed input and configuration schema
     elif analysis.configuration_values['analysis_program'] == 'vgfoil':
-        pass
+        logger.info("Vortex Generator XFOIL is not implemented yet!")
     elif analysis.configuration_values['analysis_program'] == 'viiflow':
-        pass
+        logger.info("VIIFLOW is not implemented!")
     elif analysis.config['analysis_program'] == 'rfoil':
-        pass
+        logger.info("RFOIL by DTU is not implemented!")
 
     analysis.finalise()
 

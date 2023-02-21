@@ -2,29 +2,21 @@ import os.path
 import logging
 import numpy as np
 from xfoil import XFoil
-# from vgfoil import VGFoil
-
 
 logger = logging.getLogger(__name__)
-
-# TODO properly code initialization of VGFoil or XFoil instance and property setters
-xf = XFoil()  # create xfoil object
-xf.print = 1  # Suppress terminal output: 0, enable output: 1
-#xf.ctauvg = (0, 0, 0.25, 2.5)
-#xf.xvg = (1, 0.8)
-#xf.hvg = (0, 0.002)
-#xf.xtr = (0.05, 0.1)
 
 
 def call(analysis):
     '''Runs analysis using Xfoil'''
-    logger.info("Xfoil solver started.")
+    # TODO properly code initialization of XFoil Class instance and property setters
+    xf = XFoil()  # create xfoil object
+    xf.print = int(not analysis.configuration_values["silent_mode"])  # Suppress terminal output: 0, enable output: 1
     # load airfoil shapefiles dataset
     input_dataset = analysis.input_manifest.get_dataset("aerofoil_shape_data")
 
     #TODO [?] Should airfoil section and repanel settings be in config rather then input?
     airfoil_file = input_dataset.get_file_by_label(analysis.input_values["airfoil_label"])
-    xf.airfoil = load_airfoil(airfoil_file)
+    xf.airfoil = load_airfoil(xf, airfoil_file)
     # It is possible to repanel
     if analysis.input_values['repanel']:
         xf.repanel(n_nodes=analysis.input_values['repanel_configuration']['nodes'])
@@ -61,6 +53,7 @@ def call(analysis):
     # TODO
     #  [?] Use "xf.a" with a for loop OR we should care only about the last result in seq???
     #  Note: IF "xf.aseq" is used get_cp_distribution returns only last converged result
+    logger.info("Xfoil solver started.")
     aoa_range=np.linspace(analysis.input_values['alpha_range'][0],
                           analysis.input_values['alpha_range'][1],
                           analysis.input_values['alpha_range'][2])
@@ -102,7 +95,7 @@ def set_input(_in):
     return reynolds, x_transition
 
 
-def load_airfoil(airfoil_file):
+def load_airfoil(xf, airfoil_file):
     """
     Loads airfoil geometry data from .dat file
     """
