@@ -120,7 +120,7 @@ jobs:
           service: ${{ steps.service-name.outputs.service_name }}
           image: ${{ needs.info.outputs.image_version_artefact }}
           region: ${{ needs.info.outputs.gcp_region }}
-          tag: ${{ needs.info.outputs.image_version_tag }}
+          tag: sha${{ needs.info.outputs.short_sha }}
 
       - name: Show deployed service URL
         run: |
