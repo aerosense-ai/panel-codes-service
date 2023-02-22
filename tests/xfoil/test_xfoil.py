@@ -8,16 +8,9 @@ from app import REPOSITORY_ROOT
 
 
 class TestXFoil(TestCase):
-
-    def get_xfoil_case_path(self, xfoil_case):
-        """Sets XFOIL with the case"""
-        return os.path.join(REPOSITORY_ROOT, "tests", "xfoil", "cases", xfoil_case)
-
-    def test_call(self):
-        """Test that xfoil runs NACA0012 analysis and that results are consistent with compiled version from NASA
-        website.
-        """
-        case_path = self.get_xfoil_case_path("naca0012")
+    def run_xfoil_case(self, case):
+        """Runs XFOIL case"""
+        case_path = os.path.join(REPOSITORY_ROOT, "tests", "xfoil", "cases", case)
 
         runner = Runner(
             app_src=REPOSITORY_ROOT,
@@ -36,4 +29,18 @@ class TestXFoil(TestCase):
             input_manifest=manifest
         )
 
-        analysis.finalise()
+        return analysis
+
+    def test_naca0012(self):
+        """Test that xfoil runs NACA0012 analysis and that results are consistent with compiled version from NASA
+        website.
+        """
+        result = self.run_xfoil_case("naca0012")
+        # TODO compare cl, cd, cm values to unwrapped xfoil solver
+        assert all(key in result.output_values for key in ("cl", "cd", "cm"))
+
+    def test_xfoil_run_with_json_geometry(self):
+        """Test that xfoil runs NACA0018 analysis if geometry is provided as a dictionary"""
+        result = self.run_xfoil_case("naca0018")
+
+        assert all(key in result.output_values for key in ("cl", "cd", "cm"))

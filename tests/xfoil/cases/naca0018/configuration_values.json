@@ -1,0 +1,9 @@
+{
+    "analysis_program": "xfoil",
+    "silent_mode": true,
+    "max_iterations":1000,
+    "backend": {
+        "name": "GCPPubSubBackend",
+        "project_name": "aerosense-twined"
+    }
+}
