@@ -68,6 +68,7 @@
         "properties": {
             "airfoil_geometry": {
                 "title": "Airfoil geometry",
+                "description": "Airfoil geometry specified as ordered xy pairs. Provided either as .dat file or as two separate, ordered arrays",
                 "type": "object",
                 "properties": {
                     "xy_coordinates":{
@@ -85,6 +86,7 @@
                     },
                     "airfoil_geometry_filename": {
                         "title": "Airfoil geometry filename",
+                        "description": "Filename from the Dataset containing geometry files ex. naca_0012.dat",
                         "type": "string"
                     }
                 }

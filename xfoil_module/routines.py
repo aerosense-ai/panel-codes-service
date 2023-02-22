@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 def call(analysis):
     '''Runs analysis using Xfoil'''
     # TODO properly code initialization of XFoil Class instance and property setters
-    xf = XFoil()  # create xfoil object
+    xf = XFoil()
     xf.print = int(not analysis.configuration_values["silent_mode"])  # Suppress terminal output: 0, enable output: 1
     xf.airfoil = load_airfoil(xf, analysis)
 
@@ -99,7 +99,7 @@ def load_airfoil(xf, analysis):
         input_dataset = analysis.input_manifest.get_dataset("aerofoil_shape_data")
         airfoil_file_path = input_dataset.files.filter(
             name=analysis.input_values["airfoil_geometry"]["airfoil_geometry_filename"]
-        ).one().path
+        ).one().local_path
 
         with open(airfoil_file_path) as f:
             content = f.readlines()
