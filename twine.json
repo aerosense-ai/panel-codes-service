@@ -55,12 +55,19 @@
             }
         }
     },
+    "input_manifest":{
+		"datasets": {
+            "aerofoil_shape_data":{
+                "purpose": "A dataset containing shape files in .dat or tab delimited open form, describing the aerofoil shape."
+            }
+        }
+    },
     "input_values_schema": {
         "title": "Input values schema",
         "type": "object",
         "properties": {
-            "airfoil_geometry_file": {
-                "title": "A path to the Airfoil .dat file",
+            "airfoil_geometry_filename": {
+                "title": "Airfoil geometry filename",
                 "type": "string"
             },
             "repanel": {

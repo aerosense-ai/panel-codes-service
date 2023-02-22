@@ -1,4 +1,5 @@
 {
+  "airfoil_geometry_filename": "naca_0012.dat",
   "repanel": false,
   "alpha_range": [0, 6, 3],
   "inflow_speed": 1,

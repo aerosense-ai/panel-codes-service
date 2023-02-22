@@ -1,8 +1,8 @@
-import json
 import os
 from unittest import TestCase
 
 from octue import Runner
+from octue.resources import Manifest
 
 from app import REPOSITORY_ROOT
 
@@ -25,11 +25,15 @@ class TestXFoil(TestCase):
             configuration_values=os.path.join(case_path, "configuration_values.json")
         )
 
-        with open(os.path.join(case_path, "input_values.json"), "r") as values_file:
-            input_values=json.load(values_file)
-        input_values["airfoil_geometry_file"] = os.path.join(case_path, "naca_0012.dat")
+        manifest = Manifest(
+                datasets={
+                    "aerofoil_shape_data": os.path.join(REPOSITORY_ROOT, "tests", "xfoil", "cases", "geometry_files")
+                }
+            ).to_primitive()
+
         analysis = runner.run(
-            input_values=input_values
+            input_values=os.path.join(case_path, "input_values.json"),
+            input_manifest=manifest
         )
 
         analysis.finalise()
