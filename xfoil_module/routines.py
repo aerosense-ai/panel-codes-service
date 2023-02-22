@@ -13,7 +13,9 @@ def call(analysis):
     xf.print = int(not analysis.configuration_values["silent_mode"])  # Suppress terminal output: 0, enable output: 1
     # load airfoil shapefiles dataset
     input_dataset = analysis.input_manifest.get_dataset("aerofoil_shape_data")
-    airfoil_file_path = input_dataset.files.filter(name=analysis.input_values["airfoil_geometry_filename"]).one().path
+    airfoil_file_path = input_dataset.files.filter(
+        name=analysis.input_values["airfoil_geometry"]["airfoil_geometry_filename"]
+    ).one().path
     xf.airfoil = load_airfoil(xf, airfoil_file_path)
 
     # TODO [?] Should airfoil section and repanel settings be in config rather then input?

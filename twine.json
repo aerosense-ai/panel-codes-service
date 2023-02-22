@@ -66,9 +66,28 @@
         "title": "Input values schema",
         "type": "object",
         "properties": {
-            "airfoil_geometry_filename": {
-                "title": "Airfoil geometry filename",
-                "type": "string"
+            "airfoil_geometry": {
+                "title": "Airfoil geometry",
+                "type": "object",
+                "properties": {
+                    "xy_coordinates":{
+                        "title": "XY coordinates",
+                        "description": "Two arrays of XY coordinates describing the aerofoil geometry, in a counterclockwise order",
+                        "type": "object",
+                        "properties": {
+                            "x_coordinates": {
+                                "type": "array"
+                            },
+                            "y_coordinates": {
+                                "type": "array"
+                            }
+                        }
+                    },
+                    "airfoil_geometry_filename": {
+                        "title": "Airfoil geometry filename",
+                        "type": "string"
+                    }
+                }
             },
             "repanel": {
                 "title": "Repanel Airfoil",
