@@ -17,7 +17,7 @@ class TestDeployment(TestCase):
         )
 
         input_values = {
-            "airfoil_geometry_filename": "naca_0012.dat",
+            "airfoil_geometry": {"airfoil_geometry_filename": "naca_0012.dat"},
             "alpha_range": [0, 6, 3],
             "repanel": False,
             "inflow_speed": 100,
