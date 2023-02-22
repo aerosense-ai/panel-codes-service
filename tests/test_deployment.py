@@ -17,13 +17,13 @@ class TestDeployment(TestCase):
         )
 
         input_values = {
-            "airfoil_label": "naca-0012",
-            "alpha_range": [-10, 10, 3],
+            "airfoil_geometry_filename": "naca_0012.dat",
+            "alpha_range": [0, 6, 3],
             "repanel": False,
-            "inflow_speed": 1,
-            "kinematic_viscosity": 1e-6,
+            "inflow_speed": 100,
+            "kinematic_viscosity": 15e-6,
             "characteristic_length": 1,
-            "mach_number": 0,
+            "mach_number": 0.3,
             "n_critical": 9,
             "re_xtr": [5e5, 5e5]
         }
