@@ -11,12 +11,7 @@ def call(analysis):
     # TODO properly code initialization of XFoil Class instance and property setters
     xf = XFoil()  # create xfoil object
     xf.print = int(not analysis.configuration_values["silent_mode"])  # Suppress terminal output: 0, enable output: 1
-    # load airfoil shapefiles dataset
-    input_dataset = analysis.input_manifest.get_dataset("aerofoil_shape_data")
-    airfoil_file_path = input_dataset.files.filter(
-        name=analysis.input_values["airfoil_geometry"]["airfoil_geometry_filename"]
-    ).one().path
-    xf.airfoil = load_airfoil(xf, airfoil_file_path)
+    xf.airfoil = load_airfoil(xf, analysis)
 
     # TODO [?] Should airfoil section and repanel settings be in config rather then input?
     # It is possible to re-panel
@@ -95,23 +90,32 @@ def set_input(_in):
     return reynolds, x_transition
 
 
-def load_airfoil(xf, airfoil_file_path):
+def load_airfoil(xf, analysis):
     """
-    Loads airfoil geometry data from .dat file
+    Loads airfoil geometry data from .dat file or from dictionary specified in the input
     """
-    logger.info("Loaded airfoil geometry.")
-    with open(airfoil_file_path) as f:
-        content = f.readlines()
+    if "airfoil_geometry_filename" in analysis.input_values["airfoil_geometry"].keys():
+        # load airfoil shapefiles dataset
+        input_dataset = analysis.input_manifest.get_dataset("aerofoil_shape_data")
+        airfoil_file_path = input_dataset.files.filter(
+            name=analysis.input_values["airfoil_geometry"]["airfoil_geometry_filename"]
+        ).one().path
 
-    x_coord = []
-    y_coord = []
+        with open(airfoil_file_path) as f:
+            content = f.readlines()
 
-    for line in content[1:]:
-        x_coord.append(float(line.split()[0]))
-        y_coord.append(float(line.split()[1]))
+        x_coord = []
+        y_coord = []
+
+        for line in content[1:]:
+            x_coord.append(float(line.split()[0]))
+            y_coord.append(float(line.split()[1]))
+    else:
+        x_coord = analysis.input_values["airfoil_geometry"]["xy_coordinates"]["x_coordinates"]
+        y_coord = analysis.input_values["airfoil_geometry"]["xy_coordinates"]["y_coordinates"]
 
     airfoilObj = xf.airfoil
     airfoilObj.x = np.array(x_coord)
     airfoilObj.y = np.array(y_coord)
-
+    logger.info("Loaded airfoil geometry.")
     return airfoilObj
