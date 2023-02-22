@@ -40,6 +40,11 @@
                     }
                 ]
             },
+            "silent_mode": {
+                "description": "Supress panel solver terminal output stream",
+                "type": "boolean",
+                "default": true
+            },
             "max_iterations":{
                 "description": "Maximum number of iterations",
                 "type": "integer",
@@ -50,13 +55,41 @@
             }
         }
     },
+    "input_manifest":{
+		"datasets": {
+            "aerofoil_shape_data":{
+                "purpose": "A dataset containing shape files in .dat or tab delimited open form, describing the aerofoil shape."
+            }
+        }
+    },
     "input_values_schema": {
         "title": "Input values schema",
         "type": "object",
         "properties": {
-            "airfoil_label": {
-                "title": "Airfoil label",
-                "type": "string"
+            "airfoil_geometry": {
+                "title": "Airfoil geometry",
+                "description": "Airfoil geometry specified as ordered xy pairs. Provided either as .dat file or as two separate, ordered arrays",
+                "type": "object",
+                "properties": {
+                    "xy_coordinates":{
+                        "title": "XY coordinates",
+                        "description": "Two arrays of XY coordinates describing the aerofoil geometry, in a counterclockwise order",
+                        "type": "object",
+                        "properties": {
+                            "x_coordinates": {
+                                "type": "array"
+                            },
+                            "y_coordinates": {
+                                "type": "array"
+                            }
+                        }
+                    },
+                    "airfoil_geometry_filename": {
+                        "title": "Airfoil geometry filename",
+                        "description": "Filename from the Dataset containing geometry files ex. naca_0012.dat",
+                        "type": "string"
+                    }
+                }
             },
             "repanel": {
                 "title": "Repanel Airfoil",
@@ -144,13 +177,6 @@
                     }
                 ],
                 "additionalItems": false
-            }
-        }
-    },
-    "input_manifest":{
-		"datasets": {
-            "aerofoil_shape_data":{
-                "purpose": "A dataset containing shape files in .dat or tab delimited open form, describing the aerofoil shape."
             }
         }
     },

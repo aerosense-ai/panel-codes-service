@@ -2,30 +2,19 @@ import os.path
 import logging
 import numpy as np
 from xfoil import XFoil
-# from vgfoil import VGFoil
-
 
 logger = logging.getLogger(__name__)
-
-# TODO properly code initialization of VGFoil or XFoil instance and property setters
-xf = XFoil()  # create xfoil object
-xf.print = 1  # Suppress terminal output: 0, enable output: 1
-#xf.ctauvg = (0, 0, 0.25, 2.5)
-#xf.xvg = (1, 0.8)
-#xf.hvg = (0, 0.002)
-#xf.xtr = (0.05, 0.1)
 
 
 def call(analysis):
     '''Runs analysis using Xfoil'''
-    logger.info("Xfoil solver started.")
-    # load airfoil shapefiles dataset
-    input_dataset = analysis.input_manifest.get_dataset("aerofoil_shape_data")
+    # TODO properly code initialization of XFoil Class instance and property setters
+    xf = XFoil()
+    xf.print = int(not analysis.configuration_values["silent_mode"])  # Suppress terminal output: 0, enable output: 1
+    xf.airfoil = load_airfoil(xf, analysis)
 
-    #TODO [?] Should airfoil section and repanel settings be in config rather then input?
-    airfoil_file = input_dataset.get_file_by_label(analysis.input_values["airfoil_label"])
-    xf.airfoil = load_airfoil(airfoil_file)
-    # It is possible to repanel
+    # TODO [?] Should airfoil section and repanel settings be in config rather then input?
+    # It is possible to re-panel
     if analysis.input_values['repanel']:
         xf.repanel(n_nodes=analysis.input_values['repanel_configuration']['nodes'])
 
@@ -57,10 +46,11 @@ def call(analysis):
     # Set the max number of iterations
     xf.max_iter = analysis.configuration_values['max_iterations']
 
-    # Feed the AoA range to Xfoil and perfom the analysis
+    # Feed the AoA range to Xfoil and perform the analysis
     # TODO
     #  [?] Use "xf.a" with a for loop OR we should care only about the last result in seq???
     #  Note: IF "xf.aseq" is used get_cp_distribution returns only last converged result
+    logger.info("Xfoil solver started.")
     aoa_range=np.linspace(analysis.input_values['alpha_range'][0],
                           analysis.input_values['alpha_range'][1],
                           analysis.input_values['alpha_range'][2])
@@ -68,10 +58,8 @@ def call(analysis):
     results = []
     cp_results = []
 
-
     for aoa in aoa_range:
         # The result contains following tuples (Cl, Cd, Cm, Cp_min)
-        # USE forked version of xfoil, so that get_cp_distribution also outputs y-coordinate!
         results.append(xf.a(aoa))
         # TODO x-coord and y-coord remain same between iterations... But I guess we can duplicate them for now
         cp_results.append({
@@ -80,11 +68,10 @@ def call(analysis):
             'cp': xf.get_cp_distribution()[2],
         })
 
-
     # TODO should aoa be duplicated?
     analysis.output_values['aoa'] = aoa_range
     # Cast to np array for easier handling
-    results=np.array(results)
+    results = np.array(results)
     analysis.output_values['cl'] = results[:, 0]
     analysis.output_values['cd'] = results[:, 1]
     analysis.output_values['cm'] = results[:, 2]
@@ -92,6 +79,7 @@ def call(analysis):
     # TODO should we make a manifested file?
     # np.savetxt("cp_dump.csv", np.concatenate(cp_dump), delimiter=",")
     analysis.output_values['cp'] = cp_results
+
 
 def set_input(_in):
     # Calculate Reynolds from input values
@@ -102,23 +90,32 @@ def set_input(_in):
     return reynolds, x_transition
 
 
-def load_airfoil(airfoil_file):
+def load_airfoil(xf, analysis):
     """
-    Loads airfoil geometry data from .dat file
+    Loads airfoil geometry data from .dat file or from dictionary specified in the input
     """
-    logger.info(airfoil_file.local_path)
-    with open(airfoil_file.local_path) as f:
-        content = f.readlines()
+    if "airfoil_geometry_filename" in analysis.input_values["airfoil_geometry"].keys():
+        # load airfoil shapefiles dataset
+        input_dataset = analysis.input_manifest.get_dataset("aerofoil_shape_data")
+        airfoil_file_path = input_dataset.files.filter(
+            name=analysis.input_values["airfoil_geometry"]["airfoil_geometry_filename"]
+        ).one().local_path
 
-    x_coord = []
-    y_coord = []
+        with open(airfoil_file_path) as f:
+            content = f.readlines()
 
-    for line in content[1:]:
-        x_coord.append(float(line.split()[0]))
-        y_coord.append(float(line.split()[1]))
+        x_coord = []
+        y_coord = []
+
+        for line in content[1:]:
+            x_coord.append(float(line.split()[0]))
+            y_coord.append(float(line.split()[1]))
+    else:
+        x_coord = analysis.input_values["airfoil_geometry"]["xy_coordinates"]["x_coordinates"]
+        y_coord = analysis.input_values["airfoil_geometry"]["xy_coordinates"]["y_coordinates"]
 
     airfoilObj = xf.airfoil
     airfoilObj.x = np.array(x_coord)
     airfoilObj.y = np.array(y_coord)
-
+    logger.info("Loaded airfoil geometry.")
     return airfoilObj

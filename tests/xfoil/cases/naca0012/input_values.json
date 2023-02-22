@@ -1,0 +1,13 @@
+{
+  "airfoil_geometry":{
+    "airfoil_geometry_filename": "naca_0012.dat"
+  },
+  "repanel": false,
+  "alpha_range": [0, 6, 3],
+  "inflow_speed": 100,
+  "kinematic_viscosity": 15e-5,
+  "characteristic_length": 1,
+  "mach_number": 0.3,
+  "n_critical": 9,
+  "re_xtr":[5e5,5e5]
+}

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "panel-codes-service"
-version = "0.0.1"
+version = "0.1.0"
 description = ""
 authors = ["time-trader"]
 license = "MIT"
