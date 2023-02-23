@@ -1,4 +1,4 @@
-name: ci
+name: cd
 
 on:
   push:
@@ -121,14 +121,13 @@ jobs:
           flags: '--allow-unauthenticated'
 
       - name: Show deployed service URL
-        run: |
-          echo "${{ steps.deploy-service.outputs.url }}"
+        run: echo "${{ steps.deploy-service.outputs.url }}"
 
       - name: Create topic and subscription
-        uses: octue/create-push-subscription@0.1.0
+        uses: octue/create-push-subscription@0.2.1
         with:
           project_name: ${{ needs.info.outputs.gcp_project_name }}
           service_namespace: ${{ needs.info.outputs.gcp_resource_affix }}
           service_name: ${{ needs.info.outputs.gcp_service_name }}
-          revision_tag: ${{ needs.info.outputs.version_slug }}
+          service_revision_tag: ${{ needs.info.outputs.version_slug }}
           push_endpoint: ${{ steps.deploy-service.outputs.url }}
