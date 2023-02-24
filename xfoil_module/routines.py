@@ -15,8 +15,8 @@ def call(analysis):
 
     # TODO [?] Should airfoil section and repanel settings be in config rather then input?
     # It is possible to re-panel
-    if analysis.input_values['repanel']:
-        xf.repanel(n_nodes=analysis.input_values['repanel_configuration']['nodes'])
+    if analysis.input_values["airfoil_geometry"]['repanel']:
+        xf.repanel(n_nodes=analysis.input_values["airfoil_geometry"]['repanel_configuration']['nodes'])
 
     # Reynolds number,
     xf.Re = set_input(analysis.input_values)[0]

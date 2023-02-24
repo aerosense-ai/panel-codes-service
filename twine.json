@@ -88,13 +88,22 @@
                         "title": "Airfoil geometry filename",
                         "description": "Filename from the Dataset containing geometry files ex. naca_0012.dat",
                         "type": "string"
+                    },
+                    "repanel": {
+                        "title": "Repanel Airfoil",
+                        "type": "boolean",
+                        "default": false
+                    },
+                    "repanel_configuration": {
+                        "type": "object",
+                        "properties": {
+                            "nodes": {
+                                "description": "Number of nodes used to re-panel the airfoil",
+                                "type": "integer"
+                            }
+                        }
                     }
                 }
-            },
-            "repanel": {
-                "title": "Repanel Airfoil",
-                "type": "boolean",
-                "default": false
             },
             "alpha_range": {
                 "description": "The range of alpha values at which the solver will be run.",
