@@ -91,6 +91,7 @@
                     },
                     "repanel": {
                         "title": "Repanel Airfoil",
+                        "description":"Use XFOIL routines to re-panel the geometry?",
                         "type": "boolean",
                         "default": false
                     },
