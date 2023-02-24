@@ -1,21 +1,5 @@
 # panel-code-twine-python
-A simple twine that runs panel codes. This repository is mirrored to Google Cloud Source Repositories.
+A simple Octue service that wraps panel-codes solvers. Currently, only XFOIL is implemented.
 
-
-
-
-### Building documents manually
-
-**If you did need to build the documentation**
-
-Install `doxgen`. On a mac, that's `brew install doxygen`; other systems may differ.
-
-Install sphinx and other requirements for building the docs:
-```
-pip install -r docs/requirements.txt
-```
-
-Run the build process:
-```
-sphinx-build -b html docs/source docs/build
-```
+For the input specification, refer to `twine.json` schema.
+In, genreal for [Octue](https://github.com/octue/octue-sdk-python) services usage, look up thier Read the Docs [HERE](https://octue-python-sdk.readthedocs.io/en/latest/). 
