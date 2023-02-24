@@ -28,7 +28,7 @@ class TestDeployment(TestCase):
         }
 
         child = Child(
-            id="aerosense/panel-codes:0.1.0",
+            id="aerosense/panel-codes:0.2.0",
             backend={"name": "GCPPubSubBackend", "project_name": "aerosense-twined"},
         )
 
