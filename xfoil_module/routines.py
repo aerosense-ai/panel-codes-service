@@ -18,30 +18,11 @@ def call(analysis):
     if analysis.input_values["airfoil_geometry"]['repanel']:
         xf.repanel(n_nodes=analysis.input_values["airfoil_geometry"]['repanel_configuration']['nodes'])
 
-    # Reynolds number,
-    xf.Re = set_input(analysis.input_values)[0]
-
-    # Setting Mach number before assigning airfoil throws in the error.
-    xf.M = analysis.input_values['mach_number']
-
     # TODO Research for Critical Reynolds Number dependency from leading edge erosion, and force xtr or modify Ncrit.
     #      Default xtr is (1,1), Default n_ctit is 9.
 
-    # Force transition location
-    # Set xtr value: a forced location of BL transition. Default xtr is (1,1): no forced transition
-    # (xtr top, xtr bot), should be a tuple
-    # xf.xtr = set_input(twine_input_values)[1]
-
-    # n_crit from eN method.
-    # References:
-    # [1] J.L. van Ingen, The eN method for transition prediction. Historical review of work at TU Delft
-    # [2] L. M. Mack, Transition and Laminar Instability
-    # Default value is 9 which predicts a transition for a flat plate at 7% TI level
-    # N =  -8.43 - 2.4*ln(0.01*TI) according to Mack
-    # Beginning and end of transition for TI>0.1%
-    # N_1 = 2.13 - 6.18 log10(TI)
-    # N_2 = 5    - 6.18 log10(TI)
-    xf.n_crit = analysis.input_values['n_critical']
+    # Setting Mach number before assigning airfoil throws in the error.
+    xf = set_input(xf, analysis.input_values)
 
     # Set the max number of iterations
     xf.max_iter = analysis.configuration_values['max_iterations']
@@ -50,14 +31,14 @@ def call(analysis):
     # TODO
     #  [?] Use "xf.a" with a for loop OR we should care only about the last result in seq???
     #  Note: IF "xf.aseq" is used get_cp_distribution returns only last converged result
-    logger.info("Xfoil solver started.")
-    aoa_range=np.linspace(analysis.input_values['alpha_range'][0],
-                          analysis.input_values['alpha_range'][1],
-                          analysis.input_values['alpha_range'][2])
+    aoa_range = np.linspace(analysis.input_values['alpha_range'][0],
+                            analysis.input_values['alpha_range'][1],
+                            analysis.input_values['alpha_range'][2])
 
     results = []
     cp_results = []
 
+    logger.info("Xfoil solver initialised. Starting the solver.")
     for aoa in aoa_range:
         # The result contains following tuples (Cl, Cd, Cm, Cp_min)
         results.append(xf.a(aoa))
@@ -81,13 +62,38 @@ def call(analysis):
     analysis.output_values['cp'] = cp_results
 
 
-def set_input(_in):
+def set_input(xf, input_dict):
+    """Set Reynolds, and optionally Mach number, n-critical, and forced transition location.
+
+    """
     # Calculate Reynolds from input values
-    reynolds = _in['inflow_speed'] * _in['characteristic_length'] / _in['kinematic_viscosity']
-    # Calculate x-transition from Critical Reynolds
-    # x_transition = tuple(_xtr / reynolds for _xtr in _in['re_xtr'])
-    x_transition = _in['characteristic_length']
-    return reynolds, x_transition
+    reynolds = input_dict['inflow_speed'] * input_dict['characteristic_length'] / input_dict['kinematic_viscosity']
+    xf.Re = reynolds
+
+    if 'mach_number' in input_dict.keys():
+        xf.M = input_dict['mach_number']
+
+    if 're_xtr' in input_dict.keys():
+        # Force transition location
+        # Set xtr value: a forced location of BL transition. Default xtr is (1,1): no forced transition
+        # (xtr top, xtr bot), should be a tuple
+        # Calculate x-transition from Critical Reynolds
+        x_transition = tuple(_xtr / reynolds for _xtr in input_dict['re_xtr'])
+        xf.xtr = x_transition
+
+    if 'n_critical' in input_dict.keys():
+        # n_crit from eN method.
+        # References:
+        # [1] J.L. van Ingen, The eN method for transition prediction. Historical review of work at TU Delft
+        # [2] L. M. Mack, Transition and Laminar Instability
+        # Default value is 9 which predicts a transition for a flat plate at 7% TI level
+        # N =  -8.43 - 2.4*ln(0.01*TI) according to Mack
+        # Beginning and end of transition for TI>0.1%
+        # N_1 = 2.13 - 6.18 log10(TI)
+        # N_2 = 5    - 6.18 log10(TI)
+        xf.n_crit = input_dict['n_critical']
+
+    return xf
 
 
 def load_airfoil(xf, analysis):
